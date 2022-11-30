@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="LibraryModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Book">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BookCode" Type="varchar" MaxLength="20" />
+    <Property Name="IdTypeOfBook" Type="int" />
+  </EntityType>
+  <EntityType Name="BorrowAndReturn">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="status" Type="bit" />
+    <Property Name="BorrowDay" Type="date" />
+    <Property Name="ReturnDate" Type="date" />
+    <Property Name="IdUser" Type="int" />
+    <Property Name="IdBook" Type="int" />
+    <Property Name="ReturnDay" Type="date" />
+  </EntityType>
+  <EntityType Name="TypeOfBook">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TypeOfBook" Type="varchar" MaxLength="30" />
+    <Property Name="publisher" Type="varchar" MaxLength="20" />
+    <Property Name="EntryDate" Type="date" />
+  </EntityType>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserName" Type="varchar" MaxLength="20" />
+    <Property Name="UserAddress" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <Association Name="FK_Book">
+    <End Role="Book" Type="Self.Book" Multiplicity="0..1" />
+    <End Role="BorrowAndReturn" Type="Self.BorrowAndReturn" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Book">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="BorrowAndReturn">
+        <PropertyRef Name="IdBook" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_TypeOfBook">
+    <End Role="TypeOfBook" Type="Self.TypeOfBook" Multiplicity="0..1" />
+    <End Role="Book" Type="Self.Book" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TypeOfBook">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Book">
+        <PropertyRef Name="IdTypeOfBook" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_User">
+    <End Role="User" Type="Self.User" Multiplicity="0..1" />
+    <End Role="BorrowAndReturn" Type="Self.BorrowAndReturn" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="BorrowAndReturn">
+        <PropertyRef Name="IdUser" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="LibraryModelStoreContainer">
+    <EntitySet Name="Book" EntityType="Self.Book" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="BorrowAndReturn" EntityType="Self.BorrowAndReturn" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="TypeOfBook" EntityType="Self.TypeOfBook" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Book" Association="Self.FK_Book">
+      <End Role="Book" EntitySet="Book" />
+      <End Role="BorrowAndReturn" EntitySet="BorrowAndReturn" />
+    </AssociationSet>
+    <AssociationSet Name="FK_TypeOfBook" Association="Self.FK_TypeOfBook">
+      <End Role="TypeOfBook" EntitySet="TypeOfBook" />
+      <End Role="Book" EntitySet="Book" />
+    </AssociationSet>
+    <AssociationSet Name="FK_User" Association="Self.FK_User">
+      <End Role="User" EntitySet="User" />
+      <End Role="BorrowAndReturn" EntitySet="BorrowAndReturn" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

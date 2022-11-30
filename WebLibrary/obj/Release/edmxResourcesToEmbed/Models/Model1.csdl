@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="LibraryModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Book">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BookCode" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="IdTypeOfBook" Type="Int32" />
+    <NavigationProperty Name="BorrowAndReturn" Relationship="Self.FK_Book" FromRole="Book" ToRole="BorrowAndReturn" />
+    <NavigationProperty Name="TypeOfBook" Relationship="Self.FK_TypeOfBook" FromRole="Book" ToRole="TypeOfBook" />
+  </EntityType>
+  <EntityType Name="BorrowAndReturn">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="status" Type="Boolean" />
+    <Property Name="BorrowDay" Type="DateTime" Precision="0" />
+    <Property Name="ReturnDate" Type="DateTime" Precision="0" />
+    <Property Name="IdUser" Type="Int32" />
+    <Property Name="IdBook" Type="Int32" />
+    <Property Name="ReturnDay" Type="DateTime" Precision="0" />
+    <NavigationProperty Name="Book" Relationship="Self.FK_Book" FromRole="BorrowAndReturn" ToRole="Book" />
+    <NavigationProperty Name="User" Relationship="Self.FK_User" FromRole="BorrowAndReturn" ToRole="User" />
+  </EntityType>
+  <EntityType Name="TypeOfBook">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TypeOfBook1" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="publisher" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="EntryDate" Type="DateTime" Precision="0" />
+    <NavigationProperty Name="Book" Relationship="Self.FK_TypeOfBook" FromRole="TypeOfBook" ToRole="Book" />
+  </EntityType>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="UserAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="BorrowAndReturn" Relationship="Self.FK_User" FromRole="User" ToRole="BorrowAndReturn" />
+  </EntityType>
+  <Association Name="FK_Book">
+    <End Role="Book" Type="Self.Book" Multiplicity="0..1" />
+    <End Role="BorrowAndReturn" Type="Self.BorrowAndReturn" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Book">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="BorrowAndReturn">
+        <PropertyRef Name="IdBook" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_TypeOfBook">
+    <End Role="TypeOfBook" Type="Self.TypeOfBook" Multiplicity="0..1" />
+    <End Role="Book" Type="Self.Book" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TypeOfBook">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Book">
+        <PropertyRef Name="IdTypeOfBook" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_User">
+    <End Role="User" Type="Self.User" Multiplicity="0..1" />
+    <End Role="BorrowAndReturn" Type="Self.BorrowAndReturn" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="BorrowAndReturn">
+        <PropertyRef Name="IdUser" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="LibraryEntities2" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Book" EntityType="Self.Book" />
+    <EntitySet Name="BorrowAndReturn" EntityType="Self.BorrowAndReturn" />
+    <EntitySet Name="TypeOfBook" EntityType="Self.TypeOfBook" />
+    <EntitySet Name="User" EntityType="Self.User" />
+    <AssociationSet Name="FK_Book" Association="Self.FK_Book">
+      <End Role="Book" EntitySet="Book" />
+      <End Role="BorrowAndReturn" EntitySet="BorrowAndReturn" />
+    </AssociationSet>
+    <AssociationSet Name="FK_TypeOfBook" Association="Self.FK_TypeOfBook">
+      <End Role="TypeOfBook" EntitySet="TypeOfBook" />
+      <End Role="Book" EntitySet="Book" />
+    </AssociationSet>
+    <AssociationSet Name="FK_User" Association="Self.FK_User">
+      <End Role="User" EntitySet="User" />
+      <End Role="BorrowAndReturn" EntitySet="BorrowAndReturn" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

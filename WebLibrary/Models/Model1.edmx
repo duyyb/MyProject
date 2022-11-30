@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="LibraryModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Book">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BookCode" Type="varchar" MaxLength="20" />
+          <Property Name="IdTypeOfBook" Type="int" />
+          <Property Name="Status" Type="bit" />
+          <Property Name="CoverImage" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="BorrowAndReturn">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BorrowDay" Type="date" />
+          <Property Name="ReturnDate" Type="date" />
+          <Property Name="IdUser" Type="int" />
+          <Property Name="IdBook" Type="int" />
+          <Property Name="ReturnDay" Type="date" />
+        </EntityType>
+        <EntityType Name="TypeOfBook">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Category" Type="varchar" MaxLength="30" />
+          <Property Name="Publisher" Type="varchar" MaxLength="20" />
+          <Property Name="EntryDate" Type="date" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="20" />
+          <Property Name="UserAddress" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <Association Name="FK_Book">
+          <End Role="Book" Type="Self.Book" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="BorrowAndReturn" Type="Self.BorrowAndReturn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Book">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BorrowAndReturn">
+              <PropertyRef Name="IdBook" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TypeOfBook">
+          <End Role="TypeOfBook" Type="Self.TypeOfBook" Multiplicity="0..1" />
+          <End Role="Book" Type="Self.Book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TypeOfBook">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Book">
+              <PropertyRef Name="IdTypeOfBook" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="BorrowAndReturn" Type="Self.BorrowAndReturn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BorrowAndReturn">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="LibraryModelStoreContainer">
+          <EntitySet Name="Book" EntityType="Self.Book" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BorrowAndReturn" EntityType="Self.BorrowAndReturn" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TypeOfBook" EntityType="Self.TypeOfBook" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Book" Association="Self.FK_Book">
+            <End Role="Book" EntitySet="Book" />
+            <End Role="BorrowAndReturn" EntitySet="BorrowAndReturn" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TypeOfBook" Association="Self.FK_TypeOfBook">
+            <End Role="TypeOfBook" EntitySet="TypeOfBook" />
+            <End Role="Book" EntitySet="Book" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User" Association="Self.FK_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="BorrowAndReturn" EntitySet="BorrowAndReturn" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="LibraryModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="UserAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BorrowAndReturn" Relationship="LibraryModel.FK_User" FromRole="User" ToRole="BorrowAndReturn" />
+        </EntityType>
+        <EntityContainer Name="LibraryEntities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="User" EntityType="Self.User" />
+          <EntitySet Name="Book" EntityType="LibraryModel.Book" />
+          <EntitySet Name="BorrowAndReturn" EntityType="LibraryModel.BorrowAndReturn" />
+          <AssociationSet Name="FK_Book" Association="LibraryModel.FK_Book">
+            <End Role="Book" EntitySet="Book" />
+            <End Role="BorrowAndReturn" EntitySet="BorrowAndReturn" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User" Association="LibraryModel.FK_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="BorrowAndReturn" EntitySet="BorrowAndReturn" />
+          </AssociationSet>
+          <EntitySet Name="TypeOfBook" EntityType="LibraryModel.TypeOfBook" />
+          <AssociationSet Name="FK_TypeOfBook" Association="LibraryModel.FK_TypeOfBook">
+            <End Role="TypeOfBook" EntitySet="TypeOfBook" />
+            <End Role="Book" EntitySet="Book" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Book">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BookCode" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="IdTypeOfBook" Type="Int32" />
+          <Property Name="Status" Type="Boolean" />
+          <NavigationProperty Name="BorrowAndReturn" Relationship="LibraryModel.FK_Book" FromRole="Book" ToRole="BorrowAndReturn" />
+          <NavigationProperty Name="TypeOfBook" Relationship="LibraryModel.FK_TypeOfBook" FromRole="Book" ToRole="TypeOfBook" />
+          <Property Name="CoverImage" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="BorrowAndReturn">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BorrowDay" Type="DateTime" Precision="0" />
+          <Property Name="ReturnDate" Type="DateTime" Precision="0" />
+          <Property Name="IdUser" Type="Int32" />
+          <Property Name="IdBook" Type="Int32" />
+          <Property Name="ReturnDay" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="Book" Relationship="LibraryModel.FK_Book" FromRole="BorrowAndReturn" ToRole="Book" />
+          <NavigationProperty Name="User" Relationship="LibraryModel.FK_User" FromRole="BorrowAndReturn" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Book">
+          <End Type="LibraryModel.Book" Role="Book" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="LibraryModel.BorrowAndReturn" Role="BorrowAndReturn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Book">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BorrowAndReturn">
+              <PropertyRef Name="IdBook" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User">
+          <End Type="LibraryModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="LibraryModel.BorrowAndReturn" Role="BorrowAndReturn" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BorrowAndReturn">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="TypeOfBook">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Category" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Publisher" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="EntryDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="Book" Relationship="LibraryModel.FK_TypeOfBook" FromRole="TypeOfBook" ToRole="Book" />
+        </EntityType>
+        <Association Name="FK_TypeOfBook">
+          <End Type="LibraryModel.TypeOfBook" Role="TypeOfBook" Multiplicity="0..1" />
+          <End Type="LibraryModel.Book" Role="Book" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TypeOfBook">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Book">
+              <PropertyRef Name="IdTypeOfBook" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LibraryModelStoreContainer" CdmEntityContainer="LibraryEntities2">
+          <EntitySetMapping Name="User">
+            <EntityTypeMapping TypeName="LibraryModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserAddress" ColumnName="UserAddress" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Book">
+            <EntityTypeMapping TypeName="LibraryModel.Book">
+              <MappingFragment StoreEntitySet="Book">
+                <ScalarProperty Name="CoverImage" ColumnName="CoverImage" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="IdTypeOfBook" ColumnName="IdTypeOfBook" />
+                <ScalarProperty Name="BookCode" ColumnName="BookCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BorrowAndReturn">
+            <EntityTypeMapping TypeName="LibraryModel.BorrowAndReturn">
+              <MappingFragment StoreEntitySet="BorrowAndReturn">
+                <ScalarProperty Name="ReturnDay" ColumnName="ReturnDay" />
+                <ScalarProperty Name="IdBook" ColumnName="IdBook" />
+                <ScalarProperty Name="IdUser" ColumnName="IdUser" />
+                <ScalarProperty Name="ReturnDate" ColumnName="ReturnDate" />
+                <ScalarProperty Name="BorrowDay" ColumnName="BorrowDay" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TypeOfBook">
+            <EntityTypeMapping TypeName="LibraryModel.TypeOfBook">
+              <MappingFragment StoreEntitySet="TypeOfBook">
+                <ScalarProperty Name="EntryDate" ColumnName="EntryDate" />
+                <ScalarProperty Name="Publisher" ColumnName="Publisher" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

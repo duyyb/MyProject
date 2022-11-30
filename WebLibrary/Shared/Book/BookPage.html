@@ -1,0 +1,401 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Book App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+
+    <div>
+        <h2 class=" text-center m-5">All Books</h2>
+        <div class="dataTables_length" id="example_length">
+            <label>
+                Show <select name="example_length" aria-controls="example" class="" id="size">
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="100">100</option>
+                </select> entries
+            </label>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-12">
+                <table class="table">
+                    <tr>
+                        <th>Id</th>
+                        <th>BookCode</th>
+                        <th>TypeOfBook</th>
+                        <th>Action</th>
+                        <td>
+                            <!--<p id="books" />-->
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <ul id="books" />
+    </div>
+    <input type="hidden" id="currentPageNumber" />
+    <input type="hidden" id="totalPage" />
+    <!--Pagination-->
+    <nav aria-label="Page navigation example">
+        <a class="page-item page-link" id="pre" href="#">Previous</a>
+        <ul class="pagination" id="Pagination">
+            <!--<li class="page-item"><a class="page-link" href="#">1</a></li>-->
+        </ul>
+        <a class="page-item page-link" id="next" href="#">Next</a>
+    </nav>
+    <div>
+        <h2>Search by ID</h2>
+        <input type="text" id="bookId" size="8" placeholder="Enter Id" />
+        <input type="button" value="Search" onclick="findById();" />
+        <p id="book" />
+    </div>
+    <br />
+    <div>
+        <h2>Search by Name</h2>
+        <input type="text" id="bookName" size="10" placeholder="Enter Name" />
+        <input type="button" value="Search" onclick="findByName();" />
+        <p id="bookByName" />
+    </div>
+
+    <h2>Action</h2>
+    <a href="https://localhost:44373/Shared/AddBook.html">Add and Delete Book</a>
+
+
+    <div class="modal fade" id="Update" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Update Book</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="IdBook" value="IdBook" />
+                    <p>Book Code</p>
+                    <input type="text" id="BookCode" size="20" value="" />
+                    <p>TypeOfBook</p>
+                    <select name="Type" id="Type" value="">
+                    </select>
+
+                    <style>
+                        select {
+                            width: 150px;
+                        }
+                    </style>
+
+                    <br />
+                    <br />
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" ></button>-->
+                    <!--<input type="hidden" id="Getid" value="BookId" />-->
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                    <button type="button" class="btn btn-primary" id="btnUpdate">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        var uri = '/api/Book/';
+        var ura = '/api/TypeOfBook/';
+        let pageIndex = 0;
+        let pageCount;
+
+        //Delete
+
+        $(document).on("click", "#btnDelete", function () {
+            var id = $(this).attr('value');
+            var rowToDelete = $(this).closest('tr');
+            console.log(id);
+            $.ajax({
+                url: uri + 'DeleteBook/' + id,
+                type: 'DELETE',
+                contentType: "application/json",
+                success: function () {
+                    rowToDelete.remove();
+                },
+                error: function (error) {
+                    alert(error);
+                }
+            });
+        });
+
+        //default PageNumber and PageSize when start
+        $(document).ready(function () {
+
+            getAllBook(1, $('#size').val());
+            $("size").click(function () {
+                getAllBook(pageIndex, $('#size').val())
+            });
+        });
+
+        //table
+        function getAllBook(pageNumber, pageSize) {
+            $.getJSON(uri + 'GetAllBook?pageNumber=' + pageNumber + '&pageSize=' + pageSize, function (json) {
+
+                $('table').empty()
+                console.log("pageSize= " + pageSize);
+                var tr = [];
+                console.log(json);
+                for (var i = 0; i < json.ListOut.length; i++) {
+                    tr.push('<tr>');
+                    tr.push('<td>' + (json.PageStart + i) + '</td>');
+                    tr.push('<td>' + json.ListOut[i].BookCode + '</td>');
+                    //console.log(json[i].BookCode);
+                    tr.push('<td>' + json.ListOut[i].Category + '</td>');
+                    tr.push('<td><button type="button" class="btn btn-success btn-update" value=' + json.ListOut[i].Id + ' data-toggle="modal" data-target="#Update"> Update </button>&nbsp;&nbsp;'
+                        + '<button class="btn btnDelete btn-danger" id="btnDelete" value=' + json.ListOut[i].Id + '> Delete </button></td>');
+                    tr.push('</tr>');
+
+                }
+                $('table').append($(tr.join('')));
+
+                //assign local varialble to global vairiable 
+                pageIndex = pageNumber
+                pageCount = json.TotalPage
+
+                // set pagination
+                $("#Pagination").empty()
+                let pageIndexPrev = pageNumber - 1
+                console.log('pageIndexPrev= ' + pageIndexPrev)
+                let pageIndexNext = pageNumber + 1
+                console.log('pageIndexNext= ' + pageIndexNext)
+                console.log("pageNumber= " + pageNumber);
+                for (var i = 1; i <= json.TotalPage; i++) {
+                    $("#Pagination").append('<li class="page-item"><a class="page-link" href="#" onclick="getAllBook(' + i + ',' + pageSize + ')">' + i + '</a></li>');
+                }
+                console.log("pageNumber= " + pageNumber);
+
+                console.log("totalPage= " + json.TotalPage)
+                $("#currentPageNumber").val(pageNumber)
+                $("#totalPage").val(json.TotalPage)
+            });
+
+            //chosse PageSize
+            
+
+        };
+        /*if (pageIndex = 1) { $('#pre').prop('disabled', true); }*/
+        $("#pre").click(function () {
+            if ((pageIndex-1) > 0) {
+
+                //$("#Pagination").empty()
+                getAllBook(pageIndex-1, $('#size').val())
+            }
+        });
+        console.log("pageNumber= " + pageIndex);
+
+        $("#next").click(function () {
+            if ((pageIndex+1) <= pageCount) {
+                //$('table').empty();
+                //$("#Pagination").empty();
+                getAllBook((pageIndex + 1), $('#size').val())
+
+            }
+        });
+        //SearchById
+
+        function findById() {
+            var id = $('#bookId').val();
+            $.getJSON(uri + 'GetBookById' + '/' + id)
+                .done(function (data) {
+                    $('#book').text(formatItem(data));
+                })
+                .fail(function (jqXHR, textStatus, err) {
+                    $('#book').text('Error: ' + err);
+                });
+        };
+
+        //SearchByName
+        function findByName() {
+            var name = $('#bookName').val();
+            $.ajax({
+                url: "/api/Book/BookByName?name=" + name, // /api/book/
+                type: 'GET',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (key, item) {
+                        // Add a list item for the product.
+                        $('<li>', { text: formatItem(item) }).appendTo($('#bookByName'));
+                    });
+                }
+            });
+        };
+        function formatItem(item) {
+            return item.Id + ': ' + item.BookCode + ' - ' + item.Category;
+        };
+
+
+
+    </script>
+
+    <!--dropdown ToP-->
+
+    <script>
+        var t;
+        $(document).ready(function () {
+            $.ajax({
+                url: '/api/Book/ListToP',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+
+                    $.each(data, function (i, value) {
+
+
+                        $('#Type').append($('<option>', {
+                            value: value.Id,
+                            text: value.Category
+
+                        }));
+
+                    });
+                }
+            });
+        });
+
+
+        //totalPage
+
+        //$.ajax({
+        //    url: '/api/BorrowAndReturn/GetAllBorrowBook?pageNumber=1&pageSize=5',
+        //    type: "GET",
+        //    data: { totalPage: $("#page").val() },
+        //    success: function (data) {
+        //        //console.log(data.TotalPage);
+        //        if (data.TotalPage > 0) {
+        //            for (var i = 0; i <= data.TotalPage; i++) {
+        //                //var $page = $('<span/>').addClass((i == data.pageNumber) ? "current" : "");
+        //                //$page.html((i == data.pageNumber) ? i : "<a href='#'>" + i + "</a>");
+        //                //<li class="page-item"><a class="page-link" href="#">Previous</a></li>
+        //                //$pagination.append($page);
+        //                //console.log(i);
+        //            }
+
+        //        }
+        //    },
+        //        error: function () { alert("error"); }
+        //    });
+
+
+        //Update
+
+
+        var id;
+
+        $("body").on("click", '.btn-update', function (json) {
+            /*console.log("BUTTON", data)*/
+            id = $(this).attr('value');
+            //var BookCode = $("#BookCode");
+            //var IdTypeOfBook = $("#Type");
+            //console.log(id);
+
+            //console.log(id);
+            //$('#bookCode').val(bookInfor.BookCode);
+            //$('#Type').val(bookInfor.Category);
+            $.getJSON(uri + 'GetAllBook', function (json) {
+
+                //document.getElementById("bookCode").value = json[id - 1].BookCode;
+                //document.getElementById("Type").value = json[id - 1].Category;
+                json[id].Id = id;
+                $('#BookCode').val(json[id - 1].BookCode);
+                $("#Type").val(json[id - 1].topID);
+
+                console.log(json[id].Id);
+                console.log(json[id - 1].BookCode);
+
+                console.log(json[id - 1].Category);
+                //$('#bookCode').val(bookInfor.BookCode);
+                //$('#Type').val(bookInfor.Category);
+                //    console.log(bookInfor.BookCode);
+                //document.getElementById("bookCode").value = bookInfor.BookCode;
+                //document.getElementById("Type").value = bookInfor.Category;
+
+
+                //$.ajax({
+                //    type: "GET",
+                //    url: '/api/Book/GetAllBook',
+                //    data: JSON.stringify(data),
+                //    contentType: "application/json; charset=utf-8",
+                //    //dataType: "json",
+                //    success: function (data) {
+
+                //        data.Id = id;
+                //        $('#bookCode').val(data[id].BookCode);
+                //        $('#Type').val(data[id].Category);
+                //        console.log(data[id].BookCode);
+                //        console.log(data[id].Category);
+
+
+                //        //location.reload();
+
+                //    },
+                //    error: function (error) {
+                //        console.log("error", error);
+
+                //        alert(error);
+                //    }
+
+                //});
+
+
+            });
+        });
+
+
+        $("body").on("click", "#btnUpdate", function (data) {
+            var BookCode = $("#BookCode");
+            var IdTypeOfBook = $("#Type");
+            var UpdateBook = {};
+
+            UpdateBook.Id = id;
+            UpdateBook.BookCode = BookCode.val();
+            UpdateBook.IdTypeOfBook = IdTypeOfBook.val();
+            /*Update.Id = id;*/
+            //console.log(id);
+
+
+            $.ajax({
+                type: "POST",
+                url: '/api/Book/UpdateBook',
+                data: JSON.stringify(UpdateBook),
+                contentType: "application/json; charset=utf-8",
+                //dataType: "json",
+                success: function (response) {
+
+                    console.log('kdslfk', response);
+
+                    alert("Updated: " + response.BookCode);
+                    //location.reload();
+
+                },
+                error: function (error) {
+                    alert("This BookCode Already Exist !");
+                    console.log("error", error);
+                    console.log();
+                    alert(error);
+                }
+
+            });
+        });
+
+
+    </script>
+</body>
+</html>

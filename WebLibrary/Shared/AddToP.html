@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <h1>Add TypeOfBook</h1>
+    <p>TypeOfBook</p>
+    <input type="text" id="TypeOfBook" size="20" />
+    <p>Publisher</p>
+    <input type="text" id="Publisher" size="20" />
+    <p>EntryDate</p>
+    <input type="date" id="EntryDate" size="20" />
+    <br />
+    <br />
+    <input id="btnAdd" type="button" value="Add" />
+    <a href="AddBook.html">Continue Add Book</a>
+    <br />
+    <br />
+    <a href="https://localhost:44373/Shared/TypeOfBookPage.html">Go to list TypeOfBook</a>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+
+    <script type="text/javascript">
+
+        $("body").on("click", "#btnAdd", function () {
+            var TypeOfBook1 = $("#TypeOfBook");
+            var Publisher = $("#Publisher");
+            var EntryDate = $("#EntryDate");
+            var NewToP = {};
+            NewToP.TypeOfBook1 = TypeOfBook1.val();
+            NewToP.Publisher = Publisher.val();
+            NewToP.EntryDate = EntryDate.val();
+
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44373/api/TypeOfBook/AddToP",
+                data: JSON.stringify(NewToP),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function () {
+                    alert("Added: " + NewToP.TypeOfBook1);
+                }
+
+            });
+        });
+    </script>
+</body>
+</html>
